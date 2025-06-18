@@ -1,0 +1,137 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @WRITE_PROGRAM_MEMORY8.P2
+008     PSP_DATA
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01B     CCP_2
+01B     CCP_2_LOW
+01C     CCP_2_HIGH
+020     @TRIS_C
+021     LCD_ADDR
+022     lcd_total_rows
+023     lcd_total_columns
+024     new_row_request
+025     BACKLIGHT_LED
+026     MAIN.estado_anterior
+027-028 MAIN.adc_val
+029-02A MAIN.umidade_percent
+02B     MAIN.estado_atual
+02C     limpa_linha_lcd.linha
+02C-02D @PRINTF_LU_655.P1
+02C     lcd_init.addr
+02C     @PSTRINGCN7_655.P1
+02C     lcd_backlight_led.bl
+02C     MAIN.@SCRATCH1
+02D     lcd_init.col
+02D     @PSTRINGC7_655.@SCRATCH1
+02D     MAIN.@SCRATCH2
+02D     @PSTRINGCN7_655.@SCRATCH1
+02E-02F @DIV1616.P1
+02E     lcd_init.row
+02E-02F @MUL1616.P1
+02E     @PSTRINGC7_655.@SCRATCH2
+02E     @PRINTF_LU_655.@SCRATCH1
+02E     @PSTRINGCN7_655.@SCRATCH2
+02F     lcd_init.i
+02F     @PSTRINGC7_655.@SCRATCH3
+02F     @PRINTF_LU_655.@SCRATCH2
+02F     @PSTRINGCN7_655.@SCRATCH3
+030-031 @DIV1616.P1
+030-031 @MUL1616.P2
+030     lcd_init.@SCRATCH1
+030     @PSTRINGC7_655.@SCRATCH4
+030     @PRINTF_LU_655.@SCRATCH3
+030     @PSTRINGCN7_655.@SCRATCH4
+031     @PRINTF_LU_655.@SCRATCH4
+032     @MUL1616.@SCRATCH1
+032     @DIV1616.@SCRATCH1
+032     @PRINTF_LU_655.@SCRATCH5
+033     @PRINTF_LU_655.@SCRATCH6
+034     @PRINTF_LU_655.@SCRATCH7
+035     LCD_PUTC.in_data
+036     @delay_ms1.P1
+036     lcd_gotoxy.x
+037     lcd_gotoxy.y
+038     lcd_gotoxy.row
+039     lcd_gotoxy.column
+03A     lcd_gotoxy.row_addr
+03B     lcd_gotoxy.lcd_address
+03C     lcd_gotoxy.@SCRATCH1
+03D     lcd_send_byte.data
+03E     lcd_send_byte.type
+03F     lcd_send_byte.@SCRATCH1
+040     i2c_send_nibble.data
+041     i2c_send_nibble.type
+042     i2c_send_nibble.@SCRATCH1
+043     @I2C_WRITE_1.P1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+09C.6   C1OUT
+09C.7   C2OUT
+10D-10E @READ_PROGRAM_MEMORY8.P1
+10D-10E @WRITE_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  LCD_INIT_STRING.call
+000008  LCD_INIT_STRING.data
+00000C  @const659.call
+000015  @const664.call
+00001A  @const665.call
+00001F  @const676.call
+000028  @const677.call
+00002E  @const678.call
+000036  @delay_ms1
+00004B  @I2C_WRITE_1
+000095  i2c_send_nibble
+0000DF  lcd_send_byte
+000122  lcd_clear
+00012C  lcd_init
+00019D  lcd_backlight_led
+0001A7  lcd_gotoxy
+0001DE  LCD_PUTC
+000203  @PSTRINGC7_655
+00024E  limpa_linha_lcd
+000260  @MUL1616
+000277  @DIV1616
+00029E  @PRINTF_LU_655
+000303  @PSTRINGCN7_655
+000359  MAIN
+000359  @cinit1
+000366  @cinit2
+
+Project Directory:
+    C:\Users\TUCKLOUT\Documents\microcontroladores\irrigacao_codigo_final\
+
+Project Files:
+    irrigacao_codigo_final.c                                [11-jun-25 22:09  CRC=1BEB677A]
+    D:\Program Files (x86)\PICC\Devices\16F877A.h           [21-jun-13 16:04  CRC=4E65664C]
+    i2c_Flex_LCD.c                                          [11-jun-25 10:33  CRC=E490707E]
+
+Source signature=3371AEC2
+
+Units:
+    irrigacao_codigo_final (main)
+
+Compiler Settings:
+    Processor:      PIC16F877A
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    XREF file:   irrigacao_codigo_final.xsym
+    Errors:      irrigacao_codigo_final.err
+    Ext Symbols: irrigacao_codigo_final.esym
+    INHX8:       irrigacao_codigo_final.hex
+    Symbols:     irrigacao_codigo_final.sym
+    List:        irrigacao_codigo_final.lst
+    Debug/COFF:  irrigacao_codigo_final.cof
+    Project:     irrigacao_codigo_final.ccspjt
+    Call Tree:   irrigacao_codigo_final.tre
+    Statistics:  irrigacao_codigo_final.STA

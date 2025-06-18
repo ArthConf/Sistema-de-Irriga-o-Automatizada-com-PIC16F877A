@@ -1,0 +1,52 @@
+#include <16F877A.h>
+#FUSES XT, NOWDT, NOPUT, NOLVP, NOCPD, NOPROTECT, NODEBUG
+#use delay(clock=4000000)
+
+// Configuração I2C
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)  // SDA e SCL
+
+#include "i2c_Flex_LCD.c"   // LCD via I2C
+
+// Definições de hardware para CCS C
+#define SENSOR_PIN  PIN_A1     // Pino digital do sensor de umidade
+#define RELE_PIN    PIN_B0     // Pino do relé
+
+void config_pic(void) {
+   set_tris_a(0b00000010);   // RA1 como entrada (sensor), resto saída
+   set_tris_b(0b11111110);   // RB0 como saída (relé), resto entrada
+   output_a(0x00);
+   output_b(0x00);
+}
+
+void main() {
+   config_pic();
+
+   lcd_init(0x4E, 16, 2);  // Endereço I2C padrão 0x4E, LCD 16x2. Ajuste se necessário
+   lcd_backlight_led(ON);
+   lcd_putc('\f'); // Limpa LCD
+
+   // Mensagem de inicialização
+   lcd_gotoxy(1,1);
+   printf(lcd_putc, "IRRIGACAO");
+   lcd_gotoxy(1,2);
+   printf(lcd_putc, "CONFESSOR");
+   delay_ms(2000);
+   lcd_putc('\f');
+
+   while(TRUE) {
+      if(input(SENSOR_PIN) == 1) { // Solo seco
+         output_low(RELE_PIN); // Liga bomba/relé
+         lcd_gotoxy(1,1);
+         printf(lcd_putc, "Solo Seco       ");
+         lcd_gotoxy(1,2);
+         printf(lcd_putc, "- IRRIGANDO     ");
+      } else { // Solo úmido
+         output_high(RELE_PIN); // Desliga bomba/relé
+         lcd_gotoxy(1,1);
+         printf(lcd_putc, "Solo Umido      ");
+         lcd_gotoxy(1,2);
+         printf(lcd_putc, "Irrig. Desligada");
+      }
+      delay_ms(500);
+   }
+}

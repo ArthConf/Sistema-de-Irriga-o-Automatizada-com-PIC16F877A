@@ -1,0 +1,23 @@
+#include <16F877A.h>
+#fuses XT, NOWDT, NOPUT, NOLVP, NOCPD, NOPROTECT, NODEBUG
+#use delay(clock=4000000)
+
+// Configuração I2C
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)
+
+#include "i2c_Flex_LCD.c"   // LCD via I2C
+
+void main() {
+   lcd_init(0x4E, 16, 2);     // Inicializa LCD (ajuste 0x4E se necessário)
+   lcd_backlight_led(ON);
+   lcd_putc('\f');            // Limpa o LCD
+
+   lcd_gotoxy(1,1);           // Linha 1, coluna 1
+   printf(lcd_putc, "Ola Mundo!"); // Texto sem acento
+   lcd_gotoxy(1,2);           // Linha 2, coluna 1
+   printf(lcd_putc, "Teste LCD I2C"); // Texto sem acento
+
+   while(TRUE) {
+      // Mantém mensagem no LCD
+   }
+}

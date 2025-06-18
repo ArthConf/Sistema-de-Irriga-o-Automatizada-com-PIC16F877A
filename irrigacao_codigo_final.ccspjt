@@ -1,0 +1,22 @@
+[PROJECT]
+Target=irrigacao_codigo_final.hex
+Processor_Text=PIC16F877A
+CCSVerions=5.007
+Compiler=PCM
+CCSVersion=5.007
+[Target Data]
+FileList=irrigacao_codigo_final.c
+[Directories]
+Include=D:\Program Files (x86)\PICC\Devices\;D:\Program Files (x86)\PICC\Drivers\;C:\Users\TUCKLOUT\Documents\microcontroladores\irrigacao_codigo_final\
+[C:\Users\TUCKLOUT\Documents\microcontroladores\irrigacao_codigo_final]
+Type=4
+[mru-list]
+1=irrigacao_codigo_final.c
+[Opened Files]
+1=irrigacao_codigo_final.c
+2=
+[irrigacao_codigo_final.c]
+Type=4
+[Units]
+Count=1
+1=irrigacao_codigo_final (main)

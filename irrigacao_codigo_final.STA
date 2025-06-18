@@ -1,0 +1,70 @@
+
+ROM used:   1096/8192 (13%)
+            1096/8192 (13%) including unused fragments
+
+            1.1 Average locations per line
+            8.7 Average locations per statement
+
+RAM used:   13/368 (4%) at main() level
+            41/368 (11%) worst case
+
+Stack used: 0 worst case (0 in main + 0 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   87    49  39  irrigacao_codigo_final.c
+  661     0   0  D:\Program Files (x86)\PICC\Devices\16F877A.h
+  211    77  61  i2c_Flex_LCD.c
+----- -----
+  959   126 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     21   2    1             @delay_ms1
+0     74   7    1             @I2C_WRITE_1
+0     10   1    1    63  2.3  lcd_backlight_led
+0     74   7    3   574  5.9  i2c_send_nibble
+0     67   6    3   149  2.8  lcd_send_byte
+0     10   1    0    61  1.9  lcd_clear
+0      8   1    0             @const645
+0    113  10    5   902  5.8  lcd_init
+0     55   5    7   650  8.0  lcd_gotoxy
+0     37   3    1   324  4.7  LCD_PUTC
+0     18   2    1    92  1.6  limpa_linha_lcd
+0      9   1    0             @const659
+0     75   7    4             @PSTRINGC7_655
+0    239  22    2  1436  7.4  MAIN
+0      5   0    0             @const664
+0      5   0    0             @const665
+0     23   2    5             @MUL1616
+0     39   4    5             @DIV1616
+0      9   1    0             @const676
+0      6   1    0             @const677
+0      8   1    0             @const678
+0    101   9    9             @PRINTF_LU_655
+0     86   8    5             @PSTRINGCN7_655
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               9
+    Statements              126
+    Comments                205
+    Volume (V)              6221
+    Difficulty (D)          40.3
+    Effort to implement (E) 250770
+    Time to implement (T)   3 hours, 52 minutes
+    Est Delivered Bugs (B)  1
+    Cyclomatic Complexity   22
+    Maintainability (MI)    138
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF  1092  952  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01FFF     0  2048  
+
+
+

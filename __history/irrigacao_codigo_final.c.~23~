@@ -1,0 +1,63 @@
+#include <16F877A.h>
+#FUSES NOWDT, XT, NOPUT, NOPROTECT, NODEBUG, NOBROWNOUT, NOLVP, NOCPD, NOWRT
+#use delay(clock=4000000)
+
+// Configuração I2C
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)
+
+#include "i2c_Flex_LCD.c"   // LCD via I2C
+
+#define SENSOR_PIN  PIN_A1     // Pino digital do sensor de umidade
+#define RELE_PIN    PIN_B0     // Pino do relé
+
+void main() {
+    set_tris_a(0b00000010);   // RA1 como entrada (sensor)
+    set_tris_b(0b11111110);   // RB0 como saída (relé)
+
+    output_high(RELE_PIN);    // Garante relé desligado no início
+
+    // --- Inicialização do LCD ---
+    lcd_init(0x4E, 16, 2);     // Inicializa LCD (ajuste o endereço se necessário)
+    lcd_backlight_led(ON);
+    lcd_putc('\f');            // Limpa o LCD
+
+    lcd_gotoxy(1,1);           // Linha 1, coluna 1
+    printf(lcd_putc, "IRRIGACAO");
+    lcd_gotoxy(1,2);           // Linha 2, coluna 1
+    printf(lcd_putc, "CONFESSOR");
+    delay_ms(2000);            // Espera 2 segundos
+    lcd_putc('\f');            // Limpa LCD para operação
+
+    int estado_anterior = -1;  // -1 força a mensagem inicial
+
+    while(TRUE) {
+        int seco = input(SENSOR_PIN);    // 1 = solo seco, 0 = úmido
+
+        if(seco != estado_anterior) {
+            lcd_putc('\f'); // Limpa LCD só quando mudar o estado
+
+            if(seco == 1) {
+                output_low(RELE_PIN);   // Liga bomba/relé
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Seco      ");  // Linha 1
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "IRRIGANDO      ");  // Linha 2
+            } else {
+                output_high(RELE_PIN);  // Desliga bomba/relé
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Umido     ");  // Linha 1
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "UMIDO          ");  // Linha 2
+            }
+            estado_anterior = seco;
+        } else {
+            // Mantém o relé certo mesmo sem mudar a mensagem
+            if(seco == 1) {
+                output_low(RELE_PIN);
+            } else {
+                output_high(RELE_PIN);
+            }
+        }
+        delay_ms(500);
+    }
+}

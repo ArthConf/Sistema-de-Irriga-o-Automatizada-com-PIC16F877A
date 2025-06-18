@@ -1,0 +1,78 @@
+#include <16F877A.h>
+#FUSES NOWDT, XT, NOPUT, NOPROTECT, NODEBUG, NOBROWNOUT, NOLVP, NOCPD, NOWRT
+#use delay(clock=4000000)
+
+// Configuração I2C
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)
+
+#include "i2c_Flex_LCD.c"    // LCD via I2C
+
+#define SENSOR_PIN  PIN_A1    // Pino analógico do sensor de umidade (AN1)
+#define RELE_PIN    PIN_B0    // Pino do relé
+
+#define LIMITE_SECO   40      // Umidade abaixo deste valor (%) aciona irrigação (ajuste conforme seu sensor)
+
+void main() {
+    set_tris_a(0b00000010);     // RA1 como entrada analógica (sensor)
+    set_tris_b(0b11111110);     // RB0 como saída (relé)
+
+    output_high(RELE_PIN);      // Garante relé desligado no início
+
+    setup_adc(ADC_CLOCK_INTERNAL);
+    setup_adc_ports(AN1);       // Habilita AN1 (pino A1)
+
+    // --- Inicialização do LCD ---
+    lcd_init(0x4E, 16, 2);      // Inicializa LCD (ajuste o endereço se necessário)
+    lcd_backlight_led(ON);
+    lcd_putc('\f');             // Limpa o LCD
+
+    lcd_gotoxy(1,1);
+    printf(lcd_putc, "IRRIGACAO");
+    lcd_gotoxy(1,2);
+    printf(lcd_putc, "CONFESSOR");
+    delay_ms(2000);
+    lcd_putc('\f');
+
+    int last_estado_irrigacao = -1;
+
+    while(TRUE) {
+        set_adc_channel(1);          // Seleciona AN1
+        delay_us(20);                // Aguarda aquisição
+        int16 adc_val = read_adc();  // Lê valor ADC (0-1023)
+
+        // Converte a leitura para porcentagem de umidade:
+        // 0 = solo completamente seco, 1023 = solo completamente úmido
+        // (ajuste se seu sensor for invertido!)
+        int umidade = (int)((adc_val * 100L) / 1023);
+        // Se seu sensor for invertido (0 = úmido, 1023 = seco), troque:
+        // int umidade = 100 - ((adc_val * 100L) / 1023);
+
+        // Decide se aciona irrigação (umidade baixa)
+        int irrigando = (umidade < LIMITE_SECO) ? 1 : 0;
+
+        // Só atualiza o LCD se o estado de irrigação mudou
+        if(irrigando != last_estado_irrigacao) {
+            lcd_putc('\f');
+            if(irrigando) {
+                output_low(RELE_PIN);
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Seco      ");
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "IRRIGANDO      ");
+            } else {
+                output_high(RELE_PIN);
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Umido     ");
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "UMIDO          ");
+            }
+            last_estado_irrigacao = irrigando;
+        }
+
+        // Sempre mostra a umidade na linha 2 a partir da coluna 10
+        lcd_gotoxy(10,2);
+        printf(lcd_putc, "%3u%%", umidade);
+
+        delay_ms(500);
+    }
+}

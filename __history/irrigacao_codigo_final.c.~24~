@@ -1,0 +1,24 @@
+#include <16F877A.h>
+#FUSES NOWDT, XT, NOPUT, NOPROTECT, NODEBUG, NOBROWNOUT, NOLVP, NOCPD, NOWRT
+#use delay(clock=4000000)
+
+#define SENSOR_PIN  PIN_A1     // Pino digital do sensor de umidade
+#define RELE_PIN    PIN_B0     // Pino do relé
+
+void main() {
+    set_tris_a(0b00000010);   // RA1 como entrada (sensor)
+    set_tris_b(0b11111110);   // RB0 como saída (relé)
+
+    output_high(RELE_PIN);    // Garante relé desligado no início
+
+    while(TRUE) {
+        if(input(SENSOR_PIN) == 1) {    // 1 = solo seco (ajuste conforme o seu sensor)
+            output_low(RELE_PIN);       // Liga bomba/relé
+        } else {
+            output_high(RELE_PIN);      // Desliga bomba/relé
+        }
+        delay_ms(500);                  // Pequeno delay para estabilidade
+    }
+}
+
+

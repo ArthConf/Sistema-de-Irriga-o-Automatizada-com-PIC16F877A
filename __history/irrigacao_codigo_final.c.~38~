@@ -1,0 +1,47 @@
+#include <16F877A.h>
+#fuses NOWDT, XT, NOPUT, NOPROTECT, NODEBUG, NOBROWNOUT, NOLVP, NOCPD, NOWRT
+#use delay(clock=4000000)
+
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)
+#include "i2c_Flex_LCD.c"
+
+// Calibração original mantida (mas só vamos mostrar o valor do sensor)
+#define ADC_SECO   0     // valor ADC para solo totalmente seco (ex: 0)
+#define ADC_UMIDO  255   // valor ADC para solo totalmente molhado (ex: 255)
+
+#define SENSOR_ANALOG_CHANNEL  0    // AN0 = RA0
+#define RELE_PIN               PIN_B0
+#define LIMITE_SECO            40   // Umidade abaixo deste valor aciona irrigação
+
+void main() {
+    set_tris_a(0b00000001);         // RA0 como entrada analógica (sensor)
+    set_tris_b(0b11111110);         // RB0 como saída (relé)
+
+    output_high(RELE_PIN);          // Relé desligado no início
+
+    setup_adc(ADC_CLOCK_INTERNAL);
+    setup_adc_ports(AN0);           // Habilita apenas AN0 (RA0) como analógico
+
+    // Inicialização do LCD I2C
+    lcd_init(0x4E, 16, 2);
+    lcd_backlight_led(ON);
+    lcd_putc('\f');
+    lcd_gotoxy(1,1); printf(lcd_putc, "IRRIGACAO");
+    lcd_gotoxy(1,2); printf(lcd_putc, "VALOR SENSOR");
+    delay_ms(2000);
+    lcd_putc('\f');
+
+    while(TRUE) {
+        set_adc_channel(SENSOR_ANALOG_CHANNEL);
+        delay_us(20);
+        int16 adc_val = read_adc(); // Valor do sensor
+
+        // Mostra apenas o valor do sensor no LCD
+        lcd_gotoxy(1,1);
+        printf(lcd_putc, "Valor Sensor:");
+        lcd_gotoxy(1,2);
+        printf(lcd_putc, "%4lu           ", adc_val);
+
+        delay_ms(500);
+    }
+}

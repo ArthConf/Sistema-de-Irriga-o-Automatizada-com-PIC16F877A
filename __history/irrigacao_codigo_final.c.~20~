@@ -1,0 +1,68 @@
+#include <16F877A.h>
+#FUSES NOWDT, XT, NOPUT, NOPROTECT, NODEBUG, NOBROWNOUT, NOLVP, NOCPD, NOWRT
+#use delay(clock=4000000)
+
+// I2C do LCD
+#use I2C(master, sda=PIN_C4, scl=PIN_C3, slow=100000)
+#include "i2c_Flex_LCD.c"
+
+#define SENSOR_ANALOG_CHANNEL  0    // AN0 = RA0
+#define RELE_PIN               PIN_B0
+#define LIMITE_SECO   40            // Umidade (%) para acionar irrigação
+
+void main() {
+    set_tris_a(0b00000001);         // RA0 como entrada analógica (sensor)
+    set_tris_b(0b11111110);         // RB0 como saída (relé)
+
+    output_high(RELE_PIN);          // Relé desligado no início
+
+    setup_adc(ADC_CLOCK_INTERNAL);
+    setup_adc_ports(AN0);           // Habilita apenas AN0 (RA0) como entrada analógica
+
+    // --- Inicialização do LCD ---
+    lcd_init(0x4E, 16, 2);
+    lcd_backlight_led(ON);
+    lcd_putc('\f');
+    lcd_gotoxy(1,1);
+    printf(lcd_putc, "IRRIGACAO");
+    lcd_gotoxy(1,2);
+    printf(lcd_putc, "CONFESSOR");
+    delay_ms(2000);
+    lcd_putc('\f');
+
+    int last_estado_irrigacao = -1;
+
+    while(TRUE) {
+        set_adc_channel(SENSOR_ANALOG_CHANNEL); // Seleciona AN0 (canal 0)
+        delay_us(20);
+        int16 adc_val = read_adc(); // Lê valor ADC (0-1023)
+
+        // Se o sensor for invertido: int umidade = 100 - ((adc_val * 100L) / 1023);
+        int umidade = (int)((adc_val * 100L) / 1023);
+
+        int irrigando = (umidade < LIMITE_SECO) ? 1 : 0;
+
+        if(irrigando != last_estado_irrigacao) {
+            lcd_putc('\f');
+            if(irrigando) {
+                output_low(RELE_PIN);
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Seco      ");
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "IRRIGANDO      ");
+            } else {
+                output_high(RELE_PIN);
+                lcd_gotoxy(1,1);
+                printf(lcd_putc, "Solo Umido     ");
+                lcd_gotoxy(1,2);
+                printf(lcd_putc, "UMIDO          ");
+            }
+            last_estado_irrigacao = irrigando;
+        }
+
+        lcd_gotoxy(10,2);
+        printf(lcd_putc, "%3u%%", umidade);
+
+        delay_ms(500);
+    }
+}

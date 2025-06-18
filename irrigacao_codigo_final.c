@@ -16,7 +16,7 @@
 
 void limpa_linha_lcd(int linha) {
     lcd_gotoxy(1, linha);
-    printf(lcd_putc, "                "); // 16 espaços
+    printf(lcd_putc, "                ");
     lcd_gotoxy(1, linha);
 }
 
@@ -36,18 +36,14 @@ void main() {
     lcd_gotoxy(1,1); printf(lcd_putc, "IRRIGACAO");
     lcd_gotoxy(1,2); printf(lcd_putc, "CONFESSOR");
     delay_ms(3000);
-
-    // Apaga a tela inicial sem usar \f
     limpa_linha_lcd(1);
     limpa_linha_lcd(2);
-
     char estado_anterior = -1;
 
     while(TRUE) {
         set_adc_channel(SENSOR_ANALOG_CHANNEL);
         delay_us(20);
         int16 adc_val = read_adc();
-
         int16 umidade_percent = 0;
         if (adc_val <= ADC_ENCHARCADO) {
             umidade_percent = 100;
@@ -56,7 +52,6 @@ void main() {
         } else {
             umidade_percent = 100 * (ADC_SECO - adc_val) / (ADC_SECO - ADC_ENCHARCADO);
         }
-
         char estado_atual;
         if (adc_val >= LIMITE_SECO) {
             estado_atual = 1;  // seco
@@ -66,7 +61,6 @@ void main() {
             output_high(RELE_PIN);
         }
 
-        // Só atualiza a primeira linha se mudar o estado
         if (estado_atual != estado_anterior) {
             limpa_linha_lcd(1);
             if (estado_atual == 1)
@@ -75,11 +69,8 @@ void main() {
                 printf(lcd_putc, "Solo umido");
             estado_anterior = estado_atual;
         }
-
-        // Atualiza segunda linha sempre
         limpa_linha_lcd(2);
         printf(lcd_putc, "%3lu%% Umidade", umidade_percent);
-
         delay_ms(1000);
     }
 }
